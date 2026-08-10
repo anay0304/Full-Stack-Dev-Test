@@ -1,18 +1,22 @@
 import { useState } from "react";
+
 import customersData from "./data/customers.json";
 import laborRatesData from "./data/labor_rates.json";
+import equipmentData from "./data/equipment.json";
 
-import { normalizeCustomer } from "./utils/normalizeData";
+import {
+  normalizeCustomer,
+  normalizeEquipment,
+} from "./utils/normalizeData";
+
+import { calculateEstimate } from "./utils/calculateEstimate";
 
 import CustomerSelector from "./components/customerSelector";
 import CustomerDetails from "./components/customerDetails";
 import LaborSelector from "./components/LaborSelector";
-
-import equipmentData from "./data/equipment.json";
-import { normalizeEquipment } from "./utils/normalizeData";
-
 import EquipmentSearch from "./components/EquipmentSearch";
 import EstimateItems from "./components/EstimateItems";
+import EstimateSummary from "./components/EstimateSummary";
 
 import type { EstimateItem, LaborRate } from "./types";
 
@@ -30,8 +34,20 @@ function App() {
   const [estimateItems, setEstimateItems] = useState<EstimateItem[]>([]);
 
   const selectedCustomer = customers.find(
-    (customer) => customer.id === selectedCustomerId,
+    (customer) => customer.id === selectedCustomerId
   );
+
+  const selectedLaborRate = laborRates.find(
+    (rate) =>
+      rate.jobType === selectedJobType &&
+      rate.level === selectedLevel
+  );
+
+  const totals = calculateEstimate({
+    selectedLaborRate,
+    estimatedHours,
+    items: estimateItems,
+  });
 
   function handleJobTypeChange(jobType: string) {
     setSelectedJobType(jobType);
@@ -42,7 +58,7 @@ function App() {
   function handleAddEquipment(item: (typeof equipment)[number]) {
     setEstimateItems((currentItems) => {
       const existingItem = currentItems.find(
-        (estimateItem) => estimateItem.equipment.id === item.id,
+        (estimateItem) => estimateItem.equipment.id === item.id
       );
 
       if (existingItem) {
@@ -52,7 +68,7 @@ function App() {
                 ...estimateItem,
                 quantity: estimateItem.quantity + 1,
               }
-            : estimateItem,
+            : estimateItem
         );
       }
 
@@ -66,21 +82,28 @@ function App() {
     });
   }
 
-  function handleQuantityChange(equipmentId: string, quantity: number) {
+  function handleQuantityChange(
+    equipmentId: string,
+    quantity: number
+  ) {
     if (quantity < 1) {
       return;
     }
 
     setEstimateItems((currentItems) =>
       currentItems.map((item) =>
-        item.equipment.id === equipmentId ? { ...item, quantity } : item,
-      ),
+        item.equipment.id === equipmentId
+          ? { ...item, quantity }
+          : item
+      )
     );
   }
 
   function handleRemoveItem(equipmentId: string) {
     setEstimateItems((currentItems) =>
-      currentItems.filter((item) => item.equipment.id !== equipmentId),
+      currentItems.filter(
+        (item) => item.equipment.id !== equipmentId
+      )
     );
   }
 
@@ -94,13 +117,16 @@ function App() {
         onCustomerChange={setSelectedCustomerId}
       />
 
-      {selectedCustomer && <CustomerDetails customer={selectedCustomer} />}
+      {selectedCustomer && (
+        <CustomerDetails customer={selectedCustomer} />
+      )}
 
       <LaborSelector
         laborRates={laborRates}
         selectedJobType={selectedJobType}
         selectedLevel={selectedLevel}
         estimatedHours={estimatedHours}
+        laborSubtotal={totals.laborSubtotal}
         onJobTypeChange={handleJobTypeChange}
         onLevelChange={setSelectedLevel}
         onEstimatedHoursChange={setEstimatedHours}
@@ -113,8 +139,19 @@ function App() {
 
       <EstimateItems
         items={estimateItems}
+        equipmentSubtotal={totals.equipmentSubtotal}
         onQuantityChange={handleQuantityChange}
         onRemoveItem={handleRemoveItem}
+      />
+
+      <EstimateSummary
+        customer={selectedCustomer}
+        laborRate={selectedLaborRate}
+        estimatedHours={estimatedHours}
+        items={estimateItems}
+        laborSubtotal={totals.laborSubtotal}
+        equipmentSubtotal={totals.equipmentSubtotal}
+        grandTotal={totals.grandTotal}
       />
     </main>
   );

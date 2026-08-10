@@ -2,6 +2,7 @@ import type { EstimateItem } from "../types";
 
 type EstimateItemsProps = {
   items: EstimateItem[];
+  equipmentSubtotal: number;
   onQuantityChange: (
     equipmentId: string,
     quantity: number,
@@ -11,15 +12,10 @@ type EstimateItemsProps = {
 
 function EstimateItems({
   items,
+  equipmentSubtotal,
   onQuantityChange,
   onRemoveItem,
 }: EstimateItemsProps) {
-  const subtotal = items.reduce(
-    (total, item) =>
-      total + item.equipment.baseCost * item.quantity,
-    0,
-  );
-
   if (items.length === 0) {
     return null;
   }
@@ -70,7 +66,7 @@ function EstimateItems({
 
       <p>
         <strong>
-          Equipment Subtotal: ${subtotal.toFixed(2)}
+          Equipment Subtotal: ${equipmentSubtotal.toFixed(2)}
         </strong>
       </p>
     </section>

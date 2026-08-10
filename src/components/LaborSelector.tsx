@@ -1,20 +1,22 @@
 import type { LaborRate } from '../types'
 
 type LaborSelectorProps = {
-  laborRates: LaborRate[]
-  selectedJobType: string
-  selectedLevel: string
-  estimatedHours: number
-  onJobTypeChange: (jobType: string) => void
-  onLevelChange: (level: string) => void
-  onEstimatedHoursChange: (hours: number) => void
-}
+  laborRates: LaborRate[];
+  selectedJobType: string;
+  selectedLevel: string;
+  estimatedHours: number;
+  laborSubtotal: number;
+  onJobTypeChange: (jobType: string) => void;
+  onLevelChange: (level: string) => void;
+  onEstimatedHoursChange: (hours: number) => void;
+};
 
 function LaborSelector({
   laborRates,
   selectedJobType,
   selectedLevel,
   estimatedHours,
+  laborSubtotal,
   onJobTypeChange,
   onLevelChange,
   onEstimatedHoursChange,
@@ -96,7 +98,7 @@ function LaborSelector({
 
           <p>
             <strong>Labor Estimate:</strong> $
-            {(selectedLaborRate.hourlyRate * estimatedHours).toFixed(2)}
+            {laborSubtotal.toFixed(2)}
           </p>
         </>
       )}
