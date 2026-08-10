@@ -21,10 +21,9 @@ function EquipmentSearch({ equipment, onAddEquipment }: EquipmentSearchProps) {
   });
 
   return (
-    <section>
-      <h2>Equipment & Parts</h2>
-
+    <section className="equipment-search">
       <input
+        aria-label="Search equipment and parts"
         type="text"
         placeholder="Search equipment, brand, category, or model..."
         value={searchTerm}
@@ -36,20 +35,30 @@ function EquipmentSearch({ equipment, onAddEquipment }: EquipmentSearchProps) {
       )}
 
       {searchTerm && filteredEquipment.length > 0 && (
-        <div>
+        <div className="equipment-results" aria-live="polite">
           {filteredEquipment.map((item) => (
-            <div key={item.id}>
-              <p>
-                <strong>{item.name}</strong>
-              </p>
+            <div className="equipment-result" key={item.id}>
+              <div className="equipment-result-copy">
+                <p className="equipment-result-name">
+                  <strong>{item.name}</strong>
+                </p>
 
-              <p>
-                {item.brand} • {item.category} • {item.modelNumber}
-              </p>
+                <p className="equipment-result-meta">
+                  {item.brand} • {item.category} • {item.modelNumber}
+                </p>
 
-              <p>{formatCurrency(item.baseCost)}</p>
+                <p className="equipment-result-price">
+                  {formatCurrency(item.baseCost)}
+                </p>
+              </div>
 
-              <button onClick={() => onAddEquipment(item)}>Add</button>
+              <button
+                type="button"
+                className="primary-button equipment-add-button"
+                onClick={() => onAddEquipment(item)}
+              >
+                Add
+              </button>
             </div>
           ))}
         </div>

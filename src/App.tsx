@@ -29,6 +29,7 @@ function App() {
   const [selectedLevel, setSelectedLevel] = useState("");
   const [estimatedHours, setEstimatedHours] = useState(0);
   const [estimateItems, setEstimateItems] = useState<EstimateItem[]>([]);
+  const [estimateResetKey, setEstimateResetKey] = useState(0);
 
   const selectedCustomer = customers.find(
     (customer) => customer.id === selectedCustomerId,
@@ -112,59 +113,113 @@ function App() {
     setSelectedLevel("");
     setEstimatedHours(0);
     setEstimateItems([]);
+    setEstimateResetKey((currentKey) => currentKey + 1);
   }
 
   return (
-    <main className="app">
-      <h1>Field Estimate Tool</h1>
+    <div className="app-shell">
+      <header className="app-header">
+        <div>
+          <p className="eyebrow">Field Operations</p>
+          <h1>Field Estimate Tool</h1>
+          <p className="header-copy">
+            Build a clear customer estimate in minutes.
+          </p>
+        </div>
 
-      <CustomerSelector
-        customers={customers}
-        selectedCustomerId={selectedCustomerId}
-        onCustomerChange={setSelectedCustomerId}
-      />
+        {(selectedCustomerId ||
+          selectedJobType ||
+          estimateItems.length > 0) && (
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={handleClearEstimate}
+          >
+            New Estimate
+          </button>
+        )}
+      </header>
 
-      {selectedCustomer && <CustomerDetails customer={selectedCustomer} />}
+      <main className="estimate-layout">
+        <div className="estimate-builder">
+          <section className="panel">
+            <div className="section-heading">
+              <span className="step-number">1</span>
+              <div>
+                <h2>Customer</h2>
+                <p>Select the customer and review property details.</p>
+              </div>
+            </div>
 
-      <LaborSelector
-        laborRates={laborRates}
-        selectedJobType={selectedJobType}
-        selectedLevel={selectedLevel}
-        estimatedHours={estimatedHours}
-        laborSubtotal={totals.laborSubtotal}
-        onJobTypeChange={handleJobTypeChange}
-        onLevelChange={handleLevelChange}
-        onEstimatedHoursChange={setEstimatedHours}
-      />
+            <CustomerSelector
+              customers={customers}
+              selectedCustomerId={selectedCustomerId}
+              onCustomerChange={setSelectedCustomerId}
+            />
 
-      <EquipmentSearch
-        equipment={equipment}
-        onAddEquipment={handleAddEquipment}
-      />
+            {selectedCustomer && (
+              <CustomerDetails customer={selectedCustomer} />
+            )}
+          </section>
 
-      <EstimateItems
-        items={estimateItems}
-        equipmentSubtotal={totals.equipmentSubtotal}
-        onQuantityChange={handleQuantityChange}
-        onRemoveItem={handleRemoveItem}
-      />
+          <section className="panel">
+            <div className="section-heading">
+              <span className="step-number">2</span>
+              <div>
+                <h2>Labor</h2>
+                <p>Choose the work type and expected time on site.</p>
+              </div>
+            </div>
 
-      <EstimateSummary
-        customer={selectedCustomer}
-        laborRate={selectedLaborRate}
-        estimatedHours={estimatedHours}
-        items={estimateItems}
-        laborSubtotal={totals.laborSubtotal}
-        equipmentSubtotal={totals.equipmentSubtotal}
-        grandTotal={totals.grandTotal}
-      />
+            <LaborSelector
+              laborRates={laborRates}
+              selectedJobType={selectedJobType}
+              selectedLevel={selectedLevel}
+              estimatedHours={estimatedHours}
+              laborSubtotal={totals.laborSubtotal}
+              onJobTypeChange={handleJobTypeChange}
+              onLevelChange={handleLevelChange}
+              onEstimatedHoursChange={setEstimatedHours}
+            />
+          </section>
 
-      {(selectedCustomerId || selectedJobType || estimateItems.length > 0) && (
-        <button type="button" onClick={handleClearEstimate}>
-          Clear Estimate
-        </button>
-      )}
-    </main>
+          <section className="panel">
+            <div className="section-heading">
+              <span className="step-number">3</span>
+              <div>
+                <h2>Equipment & Parts</h2>
+                <p>Search the catalog and add required items.</p>
+              </div>
+            </div>
+
+            <EquipmentSearch
+              key={estimateResetKey}
+              equipment={equipment}
+              onAddEquipment={handleAddEquipment}
+            />
+
+            <EstimateItems
+              items={estimateItems}
+              equipmentSubtotal={totals.equipmentSubtotal}
+              onQuantityChange={handleQuantityChange}
+              onRemoveItem={handleRemoveItem}
+            />
+          </section>
+        </div>
+
+        <aside className="summary-panel">
+          <EstimateSummary
+            customer={selectedCustomer}
+            laborRate={selectedLaborRate}
+            estimatedHours={estimatedHours}
+            items={estimateItems}
+            laborSubtotal={totals.laborSubtotal}
+            equipmentSubtotal={totals.equipmentSubtotal}
+            grandTotal={totals.grandTotal}
+          />
+        </aside>
+      </main>
+    </div>
   );
 }
 

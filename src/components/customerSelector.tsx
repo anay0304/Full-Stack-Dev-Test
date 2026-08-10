@@ -12,10 +12,9 @@ function CustomerSelector({
   onCustomerChange,
 }: CustomerSelectorProps) {
   return (
-    <section>
-      <h2>Select Customer</h2>
-
+    <section className="customer-selector">
       <select
+        aria-label="Select customer"
         value={selectedCustomerId}
         onChange={(event) => onCustomerChange(event.target.value)}
       >

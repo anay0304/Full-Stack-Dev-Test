@@ -49,11 +49,13 @@ function EstimateItems({
           </label>
 
           <p>
-            Line Total: 
+            Line Total:{" "}
             {formatCurrency(item.equipment.baseCost * item.quantity)}
           </p>
 
           <button
+            type="button"
+            className="remove-button"
             onClick={() =>
               onRemoveItem(item.equipment.id)
             }
@@ -65,7 +67,7 @@ function EstimateItems({
 
       <p>
         <strong>
-          Equipment Subtotal: ${formatCurrency(equipmentSubtotal)}
+          Equipment Subtotal: {formatCurrency(equipmentSubtotal)}
         </strong>
       </p>
     </section>

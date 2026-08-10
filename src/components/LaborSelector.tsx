@@ -33,9 +33,7 @@ function LaborSelector({
   );
 
   return (
-    <section>
-      <h2>Labor</h2>
-
+    <section className="labor-selector">
       <label>
         Job Type
         <select

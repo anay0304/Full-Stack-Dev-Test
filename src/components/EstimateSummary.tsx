@@ -1,8 +1,6 @@
-import type {
-  Customer,
-  EstimateItem,
-  LaborRate,
-} from "../types";
+import type { Customer, EstimateItem, LaborRate } from "../types";
+
+import { formatCurrency, formatLabel } from "../utils/formatters";
 
 type EstimateSummaryProps = {
   customer?: Customer;
@@ -23,79 +21,94 @@ function EstimateSummary({
   equipmentSubtotal,
   grandTotal,
 }: EstimateSummaryProps) {
-  const hasEstimate =
-    laborSubtotal > 0 || equipmentSubtotal > 0;
+  const hasEstimate = laborSubtotal > 0 || equipmentSubtotal > 0;
 
   if (!hasEstimate) {
-    return null;
+    return (
+      <section className="estimate-summary empty-summary">
+        <div className="summary-heading">
+          <p className="eyebrow">Live Estimate</p>
+          <h2>Estimate Summary</h2>
+        </div>
+
+        <p className="empty-summary-copy">
+          Add labor or equipment to begin building an estimate.
+        </p>
+      </section>
+    );
   }
 
   return (
-    <section>
-      <h2>Estimate Summary</h2>
+    <section className="estimate-summary">
+      <div className="summary-heading">
+        <p className="eyebrow">Live Estimate</p>
+        <h2>Estimate Summary</h2>
+      </div>
 
       {customer && (
-        <div>
+        <div className="summary-section">
           <h3>Customer</h3>
-          <p><strong>{customer.name}</strong></p>
-          <p>{customer.address}</p>
+
+          <p className="summary-customer-name">{customer.name}</p>
+
+          <p className="summary-muted">{customer.address}</p>
         </div>
       )}
 
       {laborRate && estimatedHours > 0 && (
-        <div>
-          <h3>Labor</h3>
+        <div className="summary-section">
+          <div className="summary-section-header">
+            <h3>Labor</h3>
+
+            <strong>{formatCurrency(laborSubtotal)}</strong>
+          </div>
 
           <p>
-            {laborRate.jobType} — {laborRate.level}
+            {formatLabel(laborRate.jobType)} — {formatLabel(laborRate.level)}
           </p>
 
-          <p>
-            {estimatedHours} hours × ${laborRate.hourlyRate.toFixed(2)}
-          </p>
-
-          <p>
-            <strong>${laborSubtotal.toFixed(2)}</strong>
+          <p className="summary-muted">
+            {estimatedHours} hours × {formatCurrency(laborRate.hourlyRate)}/hour
           </p>
         </div>
       )}
 
       {items.length > 0 && (
-        <div>
-          <h3>Equipment & Parts</h3>
+        <div className="summary-section">
+          <div className="summary-section-header">
+            <h3>Equipment & Parts</h3>
 
-          {items.map((item) => (
-            <div key={item.equipment.id}>
-              <p>
-                {item.equipment.name} × {item.quantity}
-              </p>
+            <strong>{formatCurrency(equipmentSubtotal)}</strong>
+          </div>
 
-              <p>
-                $
-                {(
-                  item.equipment.baseCost *
-                  item.quantity
-                ).toFixed(2)}
-              </p>
-            </div>
-          ))}
+          <div className="summary-items">
+            {items.map((item) => {
+              const lineTotal = item.equipment.baseCost * item.quantity;
 
-          <p>
-            <strong>
-              Equipment Subtotal: $
-              {equipmentSubtotal.toFixed(2)}
-            </strong>
-          </p>
+              return (
+                <div className="summary-item" key={item.equipment.id}>
+                  <div>
+                    <p className="summary-item-name">{item.equipment.name}</p>
+
+                    <p className="summary-muted">
+                      {formatCurrency(item.equipment.baseCost)} ×{" "}
+                      {item.quantity}
+                    </p>
+                  </div>
+
+                  <strong>{formatCurrency(lineTotal)}</strong>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
-      <hr />
+      <div className="grand-total">
+        <span>Estimated Total</span>
 
-      <p>
-        <strong>
-          Estimated Total: ${grandTotal.toFixed(2)}
-        </strong>
-      </p>
+        <strong>{formatCurrency(grandTotal)}</strong>
+      </div>
     </section>
   );
 }
