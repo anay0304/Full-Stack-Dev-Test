@@ -72,7 +72,7 @@ src/
 ### Setup
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/anay0304/Full-Stack-Dev-Test.git
 cd Full-Stack-Dev-Test
 npm install
 npm run dev
