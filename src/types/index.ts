@@ -9,3 +9,15 @@ export type Customer = {
   systemAge?: number
   lastServiceDate?: string
 }
+
+export type EstimatedHours = {
+  min: number
+  max: number
+}
+
+export type LaborRate = {
+  jobType: string
+  level: string
+  hourlyRate: number
+  estimatedHours: EstimatedHours
+}
