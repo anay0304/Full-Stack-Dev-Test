@@ -1,4 +1,4 @@
-import type { Customer } from '../types'
+import type { Customer, Equipment } from '../types'
 
 type RawCustomer = {
   id: string
@@ -14,6 +14,17 @@ type RawCustomer = {
   lastServiceDate?: string
 }
 
+type RawEquipment = {
+  id: string;
+  name: string;
+  category: string;
+  brand: string;
+  modelNumber: string;
+  baseCost?: number;
+  base_cost?: number;
+};
+
+
 export function normalizeCustomer(customer: RawCustomer): Customer {
   return {
     id: customer.id,
@@ -26,4 +37,17 @@ export function normalizeCustomer(customer: RawCustomer): Customer {
     systemAge: customer.systemAge,
     lastServiceDate: customer.lastServiceDate,
   }
+}
+
+export function normalizeEquipment(
+  equipment: RawEquipment,
+): Equipment {
+  return {
+    id: equipment.id,
+    name: equipment.name,
+    category: equipment.category,
+    brand: equipment.brand,
+    modelNumber: equipment.modelNumber,
+    baseCost: equipment.baseCost ?? equipment.base_cost ?? 0,
+  };
 }

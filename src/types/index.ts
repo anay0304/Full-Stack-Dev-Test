@@ -21,3 +21,17 @@ export type LaborRate = {
   hourlyRate: number
   estimatedHours: EstimatedHours
 }
+
+export type Equipment = {
+  id: string;
+  name: string;
+  category: string;
+  brand: string;
+  modelNumber: string;
+  baseCost: number;
+};
+
+export type EstimateItem = {
+  equipment: Equipment;
+  quantity: number;
+};
