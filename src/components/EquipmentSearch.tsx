@@ -1,20 +1,17 @@
 import { useState } from "react";
 import type { Equipment } from "../types";
+import { formatCurrency } from "../utils/formatters";
 
 type EquipmentSearchProps = {
   equipment: Equipment[];
   onAddEquipment: (equipment: Equipment) => void;
 };
 
-function EquipmentSearch({
-  equipment,
-  onAddEquipment,
-}: EquipmentSearchProps) {
+function EquipmentSearch({ equipment, onAddEquipment }: EquipmentSearchProps) {
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredEquipment = equipment.filter((item) => {
-    const query = searchTerm.toLowerCase();
-
+    const query = searchTerm.trim().toLowerCase();
     return (
       item.name.toLowerCase().includes(query) ||
       item.category.toLowerCase().includes(query) ||
@@ -34,7 +31,11 @@ function EquipmentSearch({
         onChange={(event) => setSearchTerm(event.target.value)}
       />
 
-      {searchTerm && (
+      {searchTerm && filteredEquipment.length === 0 && (
+        <p>No equipment or parts found.</p>
+      )}
+
+      {searchTerm && filteredEquipment.length > 0 && (
         <div>
           {filteredEquipment.map((item) => (
             <div key={item.id}>
@@ -46,11 +47,9 @@ function EquipmentSearch({
                 {item.brand} • {item.category} • {item.modelNumber}
               </p>
 
-              <p>${item.baseCost.toFixed(2)}</p>
+              <p>{formatCurrency(item.baseCost)}</p>
 
-              <button onClick={() => onAddEquipment(item)}>
-                Add
-              </button>
+              <button onClick={() => onAddEquipment(item)}>Add</button>
             </div>
           ))}
         </div>

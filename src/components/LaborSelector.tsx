@@ -1,4 +1,5 @@
-import type { LaborRate } from '../types'
+import type { LaborRate } from "../types";
+import { formatCurrency, formatLabel } from "../utils/formatters";
 
 type LaborSelectorProps = {
   laborRates: LaborRate[];
@@ -21,17 +22,15 @@ function LaborSelector({
   onLevelChange,
   onEstimatedHoursChange,
 }: LaborSelectorProps) {
-  const jobTypes = [...new Set(laborRates.map((rate) => rate.jobType))]
+  const jobTypes = [...new Set(laborRates.map((rate) => rate.jobType))];
 
   const availableLevels = laborRates.filter(
-    (rate) => rate.jobType === selectedJobType
-  )
+    (rate) => rate.jobType === selectedJobType,
+  );
 
   const selectedLaborRate = laborRates.find(
-    (rate) =>
-      rate.jobType === selectedJobType &&
-      rate.level === selectedLevel
-  )
+    (rate) => rate.jobType === selectedJobType && rate.level === selectedLevel,
+  );
 
   return (
     <section>
@@ -47,7 +46,7 @@ function LaborSelector({
 
           {jobTypes.map((jobType) => (
             <option key={jobType} value={jobType}>
-              {jobType}
+              {formatLabel(jobType)}
             </option>
           ))}
         </select>
@@ -64,7 +63,7 @@ function LaborSelector({
 
             {availableLevels.map((rate) => (
               <option key={rate.level} value={rate.level}>
-                {rate.level}
+                {formatLabel(rate.level)}
               </option>
             ))}
           </select>
@@ -78,7 +77,7 @@ function LaborSelector({
           </p>
 
           <p>
-            <strong>Typical Duration:</strong>{' '}
+            <strong>Typical Duration:</strong>{" "}
             {selectedLaborRate.estimatedHours.min}–
             {selectedLaborRate.estimatedHours.max} hours
           </p>
@@ -90,20 +89,23 @@ function LaborSelector({
               min="0"
               step="0.5"
               value={estimatedHours}
-              onChange={(event) =>
-                onEstimatedHoursChange(Number(event.target.value))
-              }
+              onChange={(event) => {
+                const value = Number(event.target.value);
+
+                onEstimatedHoursChange(
+                  Number.isFinite(value) && value >= 0 ? value : 0,
+                );
+              }}
             />
           </label>
 
           <p>
-            <strong>Labor Estimate:</strong> $
-            {laborSubtotal.toFixed(2)}
+            <strong>Labor Estimate:</strong> {formatCurrency(laborSubtotal)}
           </p>
         </>
       )}
     </section>
-  )
+  );
 }
 
-export default LaborSelector
+export default LaborSelector;

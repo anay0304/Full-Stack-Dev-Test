@@ -1,4 +1,5 @@
 import type { EstimateItem } from "../types";
+import { formatCurrency } from "../utils/formatters";
 
 type EstimateItemsProps = {
   items: EstimateItem[];
@@ -30,7 +31,7 @@ function EstimateItems({
             <strong>{item.equipment.name}</strong>
           </p>
 
-          <p>${item.equipment.baseCost.toFixed(2)} each</p>
+          <p>{formatCurrency(item.equipment.baseCost)} each</p>
 
           <label>
             Quantity
@@ -48,10 +49,8 @@ function EstimateItems({
           </label>
 
           <p>
-            Line Total: $
-            {(
-              item.equipment.baseCost * item.quantity
-            ).toFixed(2)}
+            Line Total: 
+            {formatCurrency(item.equipment.baseCost * item.quantity)}
           </p>
 
           <button
@@ -66,7 +65,7 @@ function EstimateItems({
 
       <p>
         <strong>
-          Equipment Subtotal: ${equipmentSubtotal.toFixed(2)}
+          Equipment Subtotal: ${formatCurrency(equipmentSubtotal)}
         </strong>
       </p>
     </section>

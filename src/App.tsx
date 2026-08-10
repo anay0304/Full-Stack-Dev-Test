@@ -4,15 +4,12 @@ import customersData from "./data/customers.json";
 import laborRatesData from "./data/labor_rates.json";
 import equipmentData from "./data/equipment.json";
 
-import {
-  normalizeCustomer,
-  normalizeEquipment,
-} from "./utils/normalizeData";
+import { normalizeCustomer, normalizeEquipment } from "./utils/normalizeData";
 
 import { calculateEstimate } from "./utils/calculateEstimate";
 
-import CustomerSelector from "./components/customerSelector";
-import CustomerDetails from "./components/customerDetails";
+import CustomerSelector from "./components/CustomerSelector";
+import CustomerDetails from "./components/CustomerDetails";
 import LaborSelector from "./components/LaborSelector";
 import EquipmentSearch from "./components/EquipmentSearch";
 import EstimateItems from "./components/EstimateItems";
@@ -34,13 +31,11 @@ function App() {
   const [estimateItems, setEstimateItems] = useState<EstimateItem[]>([]);
 
   const selectedCustomer = customers.find(
-    (customer) => customer.id === selectedCustomerId
+    (customer) => customer.id === selectedCustomerId,
   );
 
   const selectedLaborRate = laborRates.find(
-    (rate) =>
-      rate.jobType === selectedJobType &&
-      rate.level === selectedLevel
+    (rate) => rate.jobType === selectedJobType && rate.level === selectedLevel,
   );
 
   const totals = calculateEstimate({
@@ -55,10 +50,21 @@ function App() {
     setEstimatedHours(0);
   }
 
+  function handleLevelChange(level: string) {
+    setSelectedLevel(level);
+
+    const rate = laborRates.find(
+      (laborRate) =>
+        laborRate.jobType === selectedJobType && laborRate.level === level,
+    );
+
+    setEstimatedHours(rate?.estimatedHours.min ?? 0);
+  }
+
   function handleAddEquipment(item: (typeof equipment)[number]) {
     setEstimateItems((currentItems) => {
       const existingItem = currentItems.find(
-        (estimateItem) => estimateItem.equipment.id === item.id
+        (estimateItem) => estimateItem.equipment.id === item.id,
       );
 
       if (existingItem) {
@@ -68,7 +74,7 @@ function App() {
                 ...estimateItem,
                 quantity: estimateItem.quantity + 1,
               }
-            : estimateItem
+            : estimateItem,
         );
       }
 
@@ -82,29 +88,30 @@ function App() {
     });
   }
 
-  function handleQuantityChange(
-    equipmentId: string,
-    quantity: number
-  ) {
+  function handleQuantityChange(equipmentId: string, quantity: number) {
     if (quantity < 1) {
       return;
     }
 
     setEstimateItems((currentItems) =>
       currentItems.map((item) =>
-        item.equipment.id === equipmentId
-          ? { ...item, quantity }
-          : item
-      )
+        item.equipment.id === equipmentId ? { ...item, quantity } : item,
+      ),
     );
   }
 
   function handleRemoveItem(equipmentId: string) {
     setEstimateItems((currentItems) =>
-      currentItems.filter(
-        (item) => item.equipment.id !== equipmentId
-      )
+      currentItems.filter((item) => item.equipment.id !== equipmentId),
     );
+  }
+
+  function handleClearEstimate() {
+    setSelectedCustomerId("");
+    setSelectedJobType("");
+    setSelectedLevel("");
+    setEstimatedHours(0);
+    setEstimateItems([]);
   }
 
   return (
@@ -117,9 +124,7 @@ function App() {
         onCustomerChange={setSelectedCustomerId}
       />
 
-      {selectedCustomer && (
-        <CustomerDetails customer={selectedCustomer} />
-      )}
+      {selectedCustomer && <CustomerDetails customer={selectedCustomer} />}
 
       <LaborSelector
         laborRates={laborRates}
@@ -128,7 +133,7 @@ function App() {
         estimatedHours={estimatedHours}
         laborSubtotal={totals.laborSubtotal}
         onJobTypeChange={handleJobTypeChange}
-        onLevelChange={setSelectedLevel}
+        onLevelChange={handleLevelChange}
         onEstimatedHoursChange={setEstimatedHours}
       />
 
@@ -153,6 +158,12 @@ function App() {
         equipmentSubtotal={totals.equipmentSubtotal}
         grandTotal={totals.grandTotal}
       />
+
+      {(selectedCustomerId || selectedJobType || estimateItems.length > 0) && (
+        <button type="button" onClick={handleClearEstimate}>
+          Clear Estimate
+        </button>
+      )}
     </main>
   );
 }
